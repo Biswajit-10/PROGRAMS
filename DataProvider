@@ -1,0 +1,29 @@
+
+	
+	static {
+		System.setProperty("webdriver.chrome.driver","./Drivers/chromedriver.exe");
+		driver=new ChromeDriver();
+	}
+	static WebDriver driver;
+	@DataProvider(name="dataprovider")
+	public Object[][] data() throws Throwable {
+		FileUtility fLib=new FileUtility();
+		int rownum=fLib.getRowCount("logindata");
+		int columncount=fLib.getColumnCount("logindata");
+		String logindata[][]=new String[rownum][columncount];
+		for(int i=1;i<rownum;i++) {
+			for(int j=0;j<columncount;j++) {
+				logindata[i-1][j]=fLib.getExcelData("logindata",i,j);
+			}
+		}
+		return logindata;
+	}
+	
+	@Test(dataProvider="dataprovider")
+	public void login(String un,String pw) throws Throwable {
+		driver.get("http://localhost:8888/");
+		Login l=new Login(driver);
+		l.loginToApp(un, pw);
+		Home h=new Home(driver);
+		h.logOut();
+	}
